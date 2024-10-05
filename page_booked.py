@@ -5,7 +5,8 @@ from tkinter import messagebox, Toplevel
 from tkinter.ttk import Combobox
 from tkinter import ttk
 from tkcalendar import DateEntry
-#from db import add_employee
+import db # import ไฟล์ฐานข้อมูลเข้ามา
+from datetime import datetime # ใช้ library datetime ซึ่งเป็นไลบรารี่ที่ใช้สำหรับการจัดการและคำนวณเกี่ยวกับวันที่และเวลา
 
 window = tk.Tk()
 window.title("จองโรงแรม")
@@ -60,6 +61,7 @@ label_checkout.grid(row=5,column=0,padx=(5,10))
 checkout_date = DateEntry(frame_form,width=12,background='darkblue',foreground='white',borderwidth=2,year=2024)
 checkout_date.grid(row=5,column=1,pady=(0,10))
 
+
 # จำนวนคนเข้าพัก
 label_person = tk.Label(frame_form,text="จำนวนผู้เข้าพัก :")
 label_person.grid(sticky='nsew',row=6,column=0,padx=(0,10))
@@ -67,17 +69,21 @@ label_person.grid(sticky='nsew',row=6,column=0,padx=(0,10))
 entry_person = tk.Entry(frame_form)
 entry_person.grid(sticky='nsew',row=6,column=1,pady=(5,10))
 
-# ปุ่มจอง
+# ปุ่มจอง พอกดจองแล้วจะแสดงหน้าต่างใหม่ที่มี รายละเอียดและปุ่มยืนยัน ปุ่มยกเลิก
 def selected():
     data_name = entry_name.get() #เก็บข้อความตั้งแต่อักขระแรกจนถึงอันสุดท้ายและเก็บไว้ที่ตัวแปร data_name
     data_lname = entry_lname.get()
     data_contact = entry_contact.get()
     data_typeroom = items.get()
+    data_checkinDate = checkin_date.get_date() #เก็บข้อมูลว/ด/ป ที่เช็คอิน
+    data_checkoutDate = checkout_date.get_date() #เก็บข้อมูลว/ด/ป ที่เช็คเอ้า
+    data_person = entry_person.get()
+    
     
     # สร้างหน้าต่างรายละเอียดการจอง
     detail_window = Toplevel(window)
     detail_window.title("รายละเอียดการจอง")
-    detail_window.geometry("300x200")
+    detail_window.geometry("400x400")
     
     # หัวข้อ
     detail_booked = tk.Label(detail_window,text="ยืนยันการจอง",font=font1,anchor='center')
@@ -90,7 +96,10 @@ def selected():
     label_datails = tk.Label(frame_datails,text=f'''
     ชื่อ-สกุล: {data_name} {data_lname}
     เบอร์ติดต่อ: {data_contact}
-    ประเภทห้อง: {data_typeroom}  
+    ประเภทห้อง: {data_typeroom}
+    วันที่เข้าพัก: {data_checkinDate}
+    วันที่ออก: {data_checkoutDate}
+    จำนวนผู้เข้าพัก: {data_person}   
     ''',justify='center',anchor='w',font=font3) #,justify='left', anchor='w'
     label_datails.grid(row=0, column=0, columnspan=2,pady=(0,10))
     
@@ -98,12 +107,40 @@ def selected():
     ok_btn.grid(row=1,column=0,padx=10,pady=10,sticky='ew')
     close_btn = tk.Button(frame_datails,text="ยกเลิก",width=10,command=detail_window.destroy)
     close_btn.grid(row=1,column=1,padx=10,pady=10,sticky='ew')
-    
+
+
+
+# ยืนยันการจอง และบันทึกข้อมูลลงใน db    
 def booked():
-    print (f"ยืนยันการจองสำเร็จ !")
+    #print (f"ยืนยันการจองสำเร็จ !")
+    data_name = entry_name.get()
+    data_lname = entry_lname.get()
+    data_contact = entry_contact.get()
+    data_typeroom = items.get()
+    data_checkinDate = checkin_date.get_date() #เก็บข้อมูลว/ด/ป ที่เช็คอิน
+    data_checkoutDate = checkout_date.get_date() #เก็บข้อมูลว/ด/ป ที่เช็คเอ้า
+    data_person = entry_person.get()
+    
+    # หาจำนวนคืนที่พัก
+    # checkin = datetime.strptime(data_checkinDate,"%d/%m/%y")
+    # checkout = datetime.strptime(data_checkoutDate,"%d/%m/%y")
+    
+    # คำนวณคืน
+    num_nights = (data_checkoutDate-data_checkinDate).days
+    
+    # ตรวจสอบข้อมูลก่อนบันทึก
+    if not data_name or not data_lname or not data_contact or not data_typeroom or not data_checkinDate or not data_checkoutDate:
+        messagebox.showerror("Error","กรุณากรอกข้อมูลให้ครบถ้วน")
+        # เรียกใช้ฟังก์ชันบันทึกข้อมูลจากไฟล์ db.py
+        return # return จะทำให้ฟังก์ชัน booked() หยุดทำงานทันทีที่บรรทัดนี้ถูกเรียกใช้งาน หมายความว่าไม่มีการดำเนินการใด ๆ ถัดไปในฟังก์ชันนี้ (เช่น การบันทึกข้อมูลลงในฐานข้อมูลจะไม่เกิดขึ้น)
+    
+    db.add_booked(data_name,data_lname,data_contact,data_typeroom,data_checkinDate,data_checkoutDate,num_nights,data_person)
+    messagebox.showinfo("การจองโรงแรม","จองห้องพักเรียบร้อยแล้ว")
+    print(f"บันทึกข้อมูล: {data_name}, {data_lname}, {data_contact}, {data_typeroom} , {data_checkinDate} ,{data_checkoutDate} , {nu},{data_person}")
 
 booked_btn = tk.Button(frame_form,text="จอง",width=10,command=selected)
 booked_btn.grid(row=7,columnspan=2,pady=(5,10))
+
 
 
 
