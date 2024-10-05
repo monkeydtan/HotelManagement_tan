@@ -14,13 +14,13 @@ def add_employee(fname,lname,address,contact,salary):
         cursor = connection.cursor()
 
         # เพิ่มข้อมูลลงในตาราง
-        cursor.execute('''
-        INSERT INTO Employee(fname,lname,address,contact,salary)
-        VALUES (?,?,?,?,?)              
-        ''',(fname, lname, address, contact, salary))
+        # cursor.execute('''
+        # INSERT INTO Employee(fname,lname,address,contact,salary)
+        # VALUES (?,?,?,?,?)              
+        # ''',(fname, lname, address, contact, salary))
     
         # ลบข้อมูลในตาราง
-        #cursor.execute("DELETE FROM Employee WHERE id='10'")
+        #cursor.execute("DELETE FROM Employee WHERE id='14'")
 
         # บันทึกการเปลี่ยนแปลง **คำสั่งนี้จำเป็นเฉพาะเมื่อทำการเปลี่ยนแปลงข้อมูลในฐานข้อมูล เช่น การ INSERT, UPDATE, หรือ DELETE**
         connection.commit()
@@ -44,4 +44,4 @@ def add_employee(fname,lname,address,contact,salary):
             connection.close()
             print("ปิดการเชื่อมต่อฐานข้อมูลแล้ว")
             
-add_employee("Nami", "aaaaaa", "South Blue", "879632540", 1000)
+add_employee("ชินจัง", "จอมแก่น", "ญี่ปุ่น", "1212121212", 500)
