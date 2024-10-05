@@ -136,7 +136,7 @@ def booked():
     
     db.add_booked(data_name,data_lname,data_contact,data_typeroom,data_checkinDate,data_checkoutDate,num_nights,data_person)
     messagebox.showinfo("การจองโรงแรม","จองห้องพักเรียบร้อยแล้ว")
-    print(f"บันทึกข้อมูล: {data_name}, {data_lname}, {data_contact}, {data_typeroom} , {data_checkinDate} ,{data_checkoutDate} , {nu},{data_person}")
+    print(f"บันทึกข้อมูล: {data_name}, {data_lname}, {data_contact}, {data_typeroom} , {data_checkinDate} ,{data_checkoutDate} , {num_nights},{data_person}")
 
 booked_btn = tk.Button(frame_form,text="จอง",width=10,command=selected)
 booked_btn.grid(row=7,columnspan=2,pady=(5,10))
