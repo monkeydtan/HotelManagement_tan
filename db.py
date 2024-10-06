@@ -116,4 +116,4 @@ def update_data(night,fname):
 # add_booked() ==> รับค่าจากการกรอกฟอร์มแล้ว         
 # selected("Tan") # ตรวจสอบข้อมูลของคนจากการค้นชื่อ fname
 # delete("kkkk") # ลบข้อมูลของคนจากชื่อ    
-update_data(3,"Tan")    
+#update_data(3,"Tan")    
