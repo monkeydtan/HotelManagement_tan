@@ -18,9 +18,6 @@ def add_booked(fname,lname,contact,type_room,checkin_date,checkout_date,night,pe
         INSERT INTO Booked(fname,lname,contact,type_room,checkin_date,checkout_date,night,person)
         VALUES (?,?,?,?,?,?,?,?)              
         ''',(fname,lname,contact,type_room,checkin_date,checkout_date,night,person))
-    
-        # ลบข้อมูลในตาราง
-        #cursor.execute("DELETE FROM Booked WHERE id='3'")
 
         # บันทึกการเปลี่ยนแปลง **คำสั่งนี้จำเป็นเฉพาะเมื่อทำการเปลี่ยนแปลงข้อมูลในฐานข้อมูล เช่น การ INSERT, UPDATE, หรือ DELETE**
         connection.commit()
@@ -44,3 +41,55 @@ def add_booked(fname,lname,contact,type_room,checkin_date,checkout_date,night,pe
             connection.close()
             print("ปิดการเชื่อมต่อฐานข้อมูลแล้ว")
 
+def delete(fname):
+    try:
+        connection = connect_db()
+        cursor = connection.cursor()
+        
+        # ลบข้อมูลในตาราง
+        cursor.execute("DELETE FROM Booked WHERE fname=?",(fname,))
+        print(f"ลบสำเร็จ")
+        
+        # บันทึกการเปลี่ยนแปลง
+        connection.commit()
+                
+    except sqlite3.Error as e:
+        print(f"เกิดข้อผิดพลาดในการเชื่อมต่อ: {e}")
+        
+    finally:
+        if connection:
+            connection.close()
+            print("ปิดการเชื่อมต่อฐานข้อมูลแล้ว")
+
+# ตรวจสอบ / ทดสอบการ select
+def selected(fname):
+    try:
+        connection = connect_db()
+        cursor = connection.cursor()
+        
+        # ตรวจสอบข้อมูล
+        cursor.execute("SELECT * FROM Booked WHERE fname=?",(fname,))
+
+        # ดึงผลลัพธ์ทั้งหมดจากการ SELECT
+        rows = cursor.fetchall() # ก็คือข้อมูลทุก column ของคนคนนั้น
+        
+        # ตรวจสอบว่ามีข้อมูลหรือไม่
+        if rows:
+            print("ข้อมูลที่พบ: ")
+            for row in rows:
+                print(row)
+        else:
+            print("ไม่พบข้อมูลที่มี fname =",fname)
+    
+    except sqlite3.Error as e:
+        print(f"เกิดข้อผิดพลาดในการเชื่อมต่อ: {e}")
+        
+    finally:
+        if connection:
+            connection.close()
+            print("ปิดการเชื่อมต่อฐานข้อมูลแล้ว")
+        
+        
+# การเรียกใช้ฟังก์ชันต่างๆ           
+selected("Tan") # ตรวจสอบข้อมูลของคนจากการค้นชื่อ fname
+# delete("kkkk") # ลบข้อมูลของคนจากชื่อ        
