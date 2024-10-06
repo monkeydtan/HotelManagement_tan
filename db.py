@@ -51,7 +51,7 @@ def delete(fname):
         print(f"ลบสำเร็จ")
         
         # บันทึกการเปลี่ยนแปลง
-        connection.commit()
+        connection.commit() # ยืนยันการลบ
                 
     except sqlite3.Error as e:
         print(f"เกิดข้อผิดพลาดในการเชื่อมต่อ: {e}")
@@ -89,7 +89,31 @@ def selected(fname):
             connection.close()
             print("ปิดการเชื่อมต่อฐานข้อมูลแล้ว")
         
+  
+def update_data(night,fname):
+    try:
+        connnection = connect_db()
+        cursor = connnection.cursor()
         
-# การเรียกใช้ฟังก์ชันต่างๆ           
-selected("Tan") # ตรวจสอบข้อมูลของคนจากการค้นชื่อ fname
-# delete("kkkk") # ลบข้อมูลของคนจากชื่อ        
+        # Update ข้อมูล **SET คือค่าที่ต้องการอัพเดท WHERE คือ ค่าที่ใช้ในการค้นหา
+        cursor.execute("UPDATE Booked SET night=? WHERE fname=?",(night,fname))
+        print(f"อัปเดตจำนวนคืนสำเร็จสำหรับคุณ {fname}")
+
+        # บันทึกการเปลี่ยนแปลง
+        connnection.commit()
+            
+    except sqlite3.Error as e:
+        print(f"เกิดข้อผิดพลาดในการเชื่อมต่อ: {e}")
+
+    # ปิดการเชื่อมต่อเมื่อทำงานเสร็จ
+    finally:
+        if connnection:
+            connnection.close()
+            print("ปิดการเชื่อมต่อฐานข้อมูลแล้ว")
+
+     
+# การเรียกใช้ฟังก์ชันต่างๆ
+# add_booked() ==> รับค่าจากการกรอกฟอร์มแล้ว         
+# selected("Tan") # ตรวจสอบข้อมูลของคนจากการค้นชื่อ fname
+# delete("kkkk") # ลบข้อมูลของคนจากชื่อ    
+update_data(3,"Tan")    
